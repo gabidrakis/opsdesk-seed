@@ -69,6 +69,22 @@ SQLite locale, plus un jeu de données d'exemple (`npm run seed`).
 - La CI (`.github/workflows/ci.yml`) est verte (`npm ci` + `npm test`).
 - Aucun secret en clair commité.
 
+## Bibliothèque de prompts (`.claude/commands/`)
+
+Prompts figés en **slash-commands de projet** (versionnées, disponibles au clone).
+Voir `prompts/README.md` pour la convention de nommage et la règle de relecture.
+
+| Commande | Usage | Argument |
+|---|---|---|
+| `/classer-ticket` | Classe un ticket en JSON structuré | texte du ticket |
+| `/rediger-reponse` | Rédige une réponse client (ton pro, 4–6 phrases) | id de ticket ou texte |
+| `/resumer-tickets` | Résume les tickets ouverts (liste + compteur/catégorie) | filtre catégorie (optionnel) |
+
+- **Règle** : toute classification doit produire un JSON **conforme à
+  `src/classification/schema.ts`** et passer `parseClassification` (§ classification).
+- `/rediger-reponse` termine toujours par « ⚠️ Relecture humaine avant envoi » — aucune
+  réponse client n'est envoyée automatiquement.
+
 ## À savoir (non déductible du code seul)
 - **Windows** : interroger l'API en `127.0.0.1`, pas `localhost` — `localhost` résout en
   IPv6 (`::1`) alors que Fastify écoute en IPv4 (`0.0.0.0`), d'où un refus de connexion.
