@@ -73,3 +73,20 @@ Relire, corriger si nécessaire, puis attester ci-dessous.
 
 _(Attestation de relecture humaine — cochée sur autorisation explicite de
 l'apprenant, qui déclare avoir relu le brouillon.)_
+
+---
+
+## Question rituelle
+
+> « Qu'ai-je délégué / enseigné à mes agents aujourd'hui, et comment l'ai-je vérifié ? »
+
+Aujourd'hui, j'ai appris à mon agent à respecter mes conditions de non-délégation,
+et aussi à vérifier mes prompts et les siens à l'aide de la grille des 6 composants.
+Ensuite je lui ai fait rédiger le triage support du Lab 1, puis je l'ai fait
+transformer une sortie LLM « bavarde » en une donnée typée et vérifiable.
+Puis j'ai figé 3 prompts en slash-commands de projet versionnées et disponibles au clone.
+Par la suite, je lui ai fait écrire un garde-fou mécanique qui empêche un commit de
+secret, et à le câbler.
+Enfin, je lui ai fait traverser un ticket inédit à toute la chaîne : classer → valider → rédiger.
+
+
