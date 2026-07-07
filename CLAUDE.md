@@ -97,6 +97,16 @@ Voir `prompts/README.md` pour la convention de nommage et la règle de relecture
 - **État de tâche (semi-persistant, sur disque)** : `plans/*.md`, `TODO.md`, `journal/`.
   Le « où en est-on » d'un chantier : plan validé, cases cochées, lignes datées d'avancement.
 
+## Planifier avant de coder
+Toute tâche multi-étapes suit ce cycle **observable** :
+1. **Plan d'abord** : écrire `plans/<feature>.md` (objectif, étapes numérotées, fichiers touchés,
+   tests, risques) — gabarit `plans/_template.md`. **Aucun code applicatif avant validation humaine
+   explicite** ; tracer la relecture dans le plan (correction ou « relu le AAAA-MM-JJ, aucune correction car… »).
+2. **TODO** : générer `TODO.md` depuis les étapes du plan ; cocher `[x]` seulement une étape réellement finie.
+3. **Journal** : après chaque étape, une ligne datée dans `journal/<AAAA-MM-JJ>.md` —
+   `[HH:MM] Étape N terminée : <résumé>. Test : <vert/rouge>.` (statut de test factuel).
+Exemple de référence : `plans/reply-endpoint.md` + `journal/2026-07-07.md` (Lab 2).
+
 ## À savoir (non déductible du code seul)
 - **Windows** : interroger l'API en `127.0.0.1`, pas `localhost` — `localhost` résout en
   IPv6 (`::1`) alors que Fastify écoute en IPv4 (`0.0.0.0`), d'où un refus de connexion.
