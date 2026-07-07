@@ -1,27 +1,28 @@
 # Pattern · Répondre à un ticket OpsDesk
 
-Issu du cycle **Act → Learn → Reuse** : la 1re réponse produite à froid a demandé
-plusieurs allers-retours (redécouverte de la base, du ton). On fige ici l'acquis pour
-que la prochaine fois soit directe.
+> **Source de vérité = le slash-command `/rediger-reponse`** (`.claude/commands/rediger-reponse.md`).
+> Cette mémoire n'en est qu'un **résumé de rappel** et doit rester alignée dessus — ne pas la
+> laisser diverger (leçon du Lab 4 : une convention dupliquée et en conflit ne s'applique pas).
 
 ## Quand l'utiliser
-Dès qu'on demande « propose/rédige une réponse au ticket #<id> ».
+Dès qu'on demande « propose/rédige une réponse au ticket #<id> ». Réflexe : lancer `/rediger-reponse`.
 
 ## Entrées
-- ID ticket dans la table `tickets` (base `data/opsdesk.db`, chemin via env `OPSDESK_DB`).
-- Champs utiles : `subject`, `body`, `category`, `priority` (voir modèle de données dans CLAUDE.md).
-- Rappel valeurs métier : `category` ∈ {acces, facturation, bug, demande, autre} ; `priority` 1–3.
+- ID ticket dans la table `tickets` (base `data/opsdesk.db`, chemin via env `OPSDESK_DB`),
+  ou récupéré via `GET http://127.0.0.1:3000/tickets/:id` (Windows : `127.0.0.1`).
+- Champs utiles : `subject`, `body`, `category`, `priority`.
 
-## Convention de ton (OpsDesk)
-- Français, **vouvoiement**, courtois et factuel — même si le ticket est en anglais.
-- Structure en 4 temps : **accusé de réception → réponse/pistes → prochaine étape → clôture**.
-- Pas de **délai chiffré** ni d'engagement qu'on ne peut pas tenir sans donnée.
-- Adapter au registre selon `category` (ex. `acces` = rassurer + étapes de déblocage ;
-  `facturation` = demander les références utiles avant toute promesse).
+## Convention de ton (résumé du slash-command)
+- **Langue du ticket** : ticket en anglais → réponse en anglais ; en français → en français.
+- Vouvoiement, ton professionnel, courtois et empathique.
+- **Un seul paragraphe, 4–6 phrases** : accuse réception → reformule le problème → indique la prochaine étape.
+- Pas de jargon interne, **pas de délai chiffré** non garanti.
+- Décision sensible (remboursement, litige, sécurité → `besoin_humain: true`) : ne pas trancher,
+  indiquer qu'un conseiller humain prend le relais.
 
 ## Sortie
 - Un fichier `replies/<id>.md`. **Ne rien modifier d'autre.**
-- Terminer par l'avertissement de relecture (cohérent avec la slash-command `/rediger-reponse`).
+- Terminer **obligatoirement** par : `⚠️ **Relecture humaine avant envoi.**`
 
 ## Garde-fou
 - **Relecture humaine OBLIGATOIRE avant envoi réel** — aucune réponse n'est envoyée automatiquement
