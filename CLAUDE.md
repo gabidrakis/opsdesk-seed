@@ -85,6 +85,18 @@ Voir `prompts/README.md` pour la convention de nommage et la règle de relecture
 - `/rediger-reponse` termine toujours par « ⚠️ Relecture humaine avant envoi » — aucune
   réponse client n'est envoyée automatiquement.
 
+## Tâches récurrentes
+- Répondre à un ticket → suivre `.claude/memory/reponses-tickets.md`.
+- Traiter des tickets en lot de façon idempotente → suivre `.claude/memory/idempotence.md`.
+
+## Carte du contexte (où vit quoi)
+- **Session (volatile)** : la tâche en cours — le fil de discussion, ce qu'on se dit maintenant.
+  Perdu à la fermeture ; ne jamais s'y fier pour ce qui doit survivre.
+- **Mémoire projet (persistante, versionnée)** : `CLAUDE.md` + `.claude/memory/*.md`.
+  Conventions, patterns, garde-fous. Committée → disponible au clone, relue à chaque session.
+- **État de tâche (semi-persistant, sur disque)** : `plans/*.md`, `TODO.md`, `journal/`.
+  Le « où en est-on » d'un chantier : plan validé, cases cochées, lignes datées d'avancement.
+
 ## À savoir (non déductible du code seul)
 - **Windows** : interroger l'API en `127.0.0.1`, pas `localhost` — `localhost` résout en
   IPv6 (`::1`) alors que Fastify écoute en IPv4 (`0.0.0.0`), d'où un refus de connexion.
