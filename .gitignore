@@ -7,3 +7,6 @@ data/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+
+# Journaux runtime de classify-batch (horodatés, non reproductibles)
+journal/classify-batch-*.md
