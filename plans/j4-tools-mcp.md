@@ -22,6 +22,15 @@ sans casser les invariants du module.
   fera de ce même contrat un **vrai outil MCP** que l'agent choisit d'appeler → confirme la Pièce 1
   (serveur MCP) comme prochaine brique. La feature « recherche » (Pièces 3/4) reste **provisoire** :
   les labs suivants définiront probablement la vraie feature livrée par le pipeline — à réajuster ici.
+- **Lab 3 (reçu 2026-07-08) — « Spécifier planner / builder / reviewer »** → recadre la Pièce 4 :
+  ce lab ne LANCE PAS le pipeline, il **spécifie les 3 agents** (6 définitions versionnées, gabarit
+  réutilisable). L'exécution du pipeline + la feature `search` sont repoussées à un lab ultérieur.
+  Livrables : `.claude/agents/{planner,builder,reviewer}.md` (frontmatter name/description/**tools**
+  + rôle + critère de sortie) et `.pi/agents/{…}.md` (frontmatter minimal, pour le Lab 5 pi.dev).
+  **Décision humaine (Gabi, 2026-07-08)** — goulot humain = **2 gates** : accepter le plan (après
+  planner), accepter le verdict (après reviewer) ; builder→reviewer reste une gate **auto** (I3,
+  vitest vert). Non-chevauchement **garanti par les outils** : planner lecture seule, builder seul
+  à porter `Write`/`Edit`, reviewer sans `Write`/`Edit`. **FAIT** (branche `j4-orchestration`).
 
 ## Lab 2 — livré (2026-07-08)
 - [x] `mcp/tickets-server.mjs` — serveur MCP « tickets », **3 outils gouvernés** (`list_tickets`,

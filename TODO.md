@@ -17,9 +17,15 @@ Source : `plans/j4-tools-mcp.md` (validé le 2026-07-08, ajusté au fil des labs
 - [x] `.mcp.json` versionné (rebranchement au clone) + doc `claude mcp add` dans CLAUDE.md
 - [x] `test/mcp-tickets.test.mjs` — Client MCP in-memory (3 outils, id=999 géré, écriture réelle, injection rejetée)
 - [x] Boot sous `node` vérifié (initialize + tools/list) ; suite **26/26 vert**
-- [ ] **Checkpoint Gabi (manuel, Claude Code)** : `claude mcp list` connected · 3 prompts · `sqlite3` id=1001
+- [x] **Checkpoint Gabi (manuel, Claude Code)** : 3 outils MCP exercés en session · écriture réelle vérifiée hors-MCP puis restaurée · base intacte (9 open). Reste : approuver 1× en CLI (`claude mcp list` affiche `⏸ Pending approval`).
 
-## À venir (en attente des labs suivants)
-- [ ] Pipeline planner→builder→reviewer (checkpoints humains tracés, I2 ; vitest vert avant reviewer, I3)
-- [ ] Feature livrée par le pipeline
-- [ ] Note d'arbitrage
+## Lab 3 — spécifier planner / builder / reviewer (branche `j4-orchestration`)
+- [x] `.claude/agents/{planner,builder,reviewer}.md` — frontmatter name/description/tools + prompt de rôle + critère de sortie
+- [x] `.pi/agents/{planner,builder,reviewer}.md` — frontmatter minimal (name/description) + prompt de rôle (pour Lab 5 pi.dev)
+- [x] Périmètres non chevauchants **garantis par les outils** (planner lecture seule · builder seul Write/Edit · reviewer pas de Write/Edit)
+- [x] Goulot humain validé : 2 gates (accepter le plan · accepter le verdict) ; builder→reviewer = gate auto I3
+- [ ] Versionner les 6 définitions (commit) — en attente feu vert Gabi
+
+## À venir (labs suivants)
+- [ ] Exécuter le pipeline planner→builder→reviewer pour livrer la feature recherche (`GET /tickets/search` + cœur `searchTickets`), checkpoints humains tracés (I2), vitest vert avant reviewer (I3)
+- [ ] Note d'arbitrage (Pièce 5)
