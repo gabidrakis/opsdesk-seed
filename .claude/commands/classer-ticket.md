@@ -1,42 +1,23 @@
 ---
-description: Classe un ticket OpsDesk en JSON structuré (categorie, priorite, besoin_humain, confiance, justification)
+description: Classe un ticket via tools/classifier-ticket.mjs (sortie structurée imposée). Utiliser pour CLASSER un ticket ; NE PAS l'utiliser pour modifier un ticket.
+allowed-tools: Bash(npx tsx:*)
 argument-hint: <texte du ticket>
 ---
 
-# Classer un ticket OpsDesk
+# Outil · classifier_ticket
 
-## 1. Rôle
-Tu es un **agent de triage support niveau 1 chez OpsDesk**, rigoureux et prudent :
-tu classes **uniquement d'après le contenu du ticket**, sans rien inventer.
+**Quand l'utiliser** : classer un ticket (sujet + corps) en catégorie, priorité et signal
+humain. **Quand NE PAS l'utiliser** : pour modifier ou mettre à jour un ticket — cet outil
+*classe seulement*, il n'écrit rien.
 
-## 2. Contexte — référentiel métier
-- **Catégories** (une seule) : `acces` (connexion, 2FA, droits) · `facturation`
-  (factures, paiements, remboursements) · `bug` (dysfonctionnement, crash, erreur
-  serveur) · `demande` (fonctionnalité ou ressource) · `autre` (reste).
-- **Priorité** (entier 1–3) : `3` bloquant/urgent (argent, sécurité, blocage) ·
-  `2` gênant contournable · `1` faible (confort, question d'info).
-- **besoin_humain** : `true` si jugement humain requis (litige, sensible, ambigu).
-- **confiance** : 0–1. **justification** : une phrase factuelle citant l'indice.
+Exécute la fonction de classification sur le ticket fourni, puis rends sa sortie **telle quelle**.
+Tu ne reformules pas le ticket de tête : tu délègues au code déterministe.
 
-## 3. Tâche
-Classe le ticket suivant : **$ARGUMENTS**
+Texte du ticket : $ARGUMENTS
 
-## 4. Contraintes & garde-fous
-- `categorie` doit appartenir à l'énumération — jamais une valeur inventée.
-- `priorite` est un entier entre 1 et 3.
-- **Si l'information est insuffisante, mets `besoin_humain: true` et n'invente pas de catégorie.**
-- Ambigu / sensible → `besoin_humain: true` et `confiance ≤ 0.5`.
-- Ne déduis rien qui ne soit pas dans le texte.
-
-## 5. Exemple
-Entrée : « Impossible de me connecter, erreur 403 depuis la mise à jour. »
-Sortie :
-```json
-{"categorie":"acces","priorite":3,"besoin_humain":false,"confiance":0.9,"justification":"Connexion impossible (erreur 403) depuis la mise à jour"}
-```
-
-## 6. Format de sortie
-Réponds **uniquement** par un objet JSON sur une seule ligne, sans prose autour.
-**La sortie doit être conforme à `src/classification/schema.ts`** (5 clés :
-`categorie`, `priorite`, `besoin_humain`, `confiance`, `justification`) et donc
-passer `parseClassification` sans erreur.
+1. Lance : `npx tsx tools/run-classifier.mjs "$ARGUMENTS"`
+   (ce wrapper appelle `classifierTicket({ subject, body })` et imprime le résultat en JSON ;
+   `tsx` — et non `node` nu — car l'outil importe le schéma `.ts`, source de vérité unique).
+2. Renvoie **uniquement** l'objet JSON obtenu, conforme à
+   `{ categorie, priorite, besoin_humain, confiance, justification }`
+   — ou `{ erreur: ... }` si le corps est vide. N'ajoute aucun commentaire.

@@ -85,9 +85,18 @@ Voir `prompts/README.md` pour la convention de nommage et la règle de relecture
 - `/rediger-reponse` termine toujours par « ⚠️ Relecture humaine avant envoi » — aucune
   réponse client n'est envoyée automatiquement.
 
+## Outils (`tools/`) — contrat d'un outil (J4, Lab 1)
+Un **outil** = **nom verbe-objet** + **description quand / quand-pas** + **erreurs en résultat**
+(jamais d'exception qui casse le flux). Exemple de référence : `tools/classifier-ticket.mjs`
+(`classifierTicket({ subject, body })`) — corps vide → `{ erreur: "…" }` (pas de throw),
+sinon sortie **conforme à `src/classification/schema.ts`** (schéma Zod = source de vérité unique,
+validée par `safeParse`, jamais recopiée). Wrapper CLI : `tools/run-classifier.mjs`, lancé via
+**`npx tsx`** (pas `node` nu : l'outil importe un `.ts`).
+
 ## Tâches récurrentes
 - Répondre à un ticket → suivre `.claude/memory/reponses-tickets.md`.
 - Traiter des tickets en lot de façon idempotente → suivre `.claude/memory/idempotence.md`.
+- Classer un ticket → slash-command `/classer-ticket` (délègue à `tools/run-classifier.mjs`).
 
 ## Carte du contexte (où vit quoi)
 - **Session (volatile)** : la tâche en cours — le fil de discussion, ce qu'on se dit maintenant.
