@@ -41,6 +41,9 @@ SQLite locale, plus un jeu de données d'exemple (`npm run seed`).
 - `GET /tickets/:id` — un ticket ; **404** `{ error: "ticket not found" }` si absent.
 - `POST /tickets/:id/status` — corps `{ "status": "..." }` ; **400** si `status` manquant,
   **404** si ticket absent.
+- `GET /tickets/stats` → `{ open, in_progress, closed }` — compteurs par statut, calculés
+  **en mémoire** en réutilisant `listTickets()` (aucun SQL nouveau ; `computeTicketStats`,
+  `src/tickets.ts`). Statuts hors des 3 attendus ignorés. Toujours **200**.
 
 ## Conventions (déduites du code)
 - Imports ESM avec extension `.js` (voir Stack).
@@ -109,6 +112,22 @@ serveur comme une **dépendance de sécurité**.
     puis `claude mcp list` → `tickets ✓ connected`. (Ne pas cumuler avec `.mcp.json` : doublon.)
 - Test : `test/mcp-tickets.test.mjs` (Client MCP + transport in-memory : 3 outils exposés,
   id introuvable géré, écriture réelle, entrée hostile rejetée).
+
+## Pipeline planner→builder→reviewer (`.claude/agents/`) — J4, Lab 3-4
+Trois agents spécialisés à **rôles non chevauchants**, garantis par leurs **outils** :
+`planner` (lecture seule — conçoit, ne code pas) · `builder` (seul avec `Write`/`Edit` — code la
+spec validée, ne replanifie pas) · `reviewer` (pas de `Write`/`Edit` — juge, ne code pas). Définitions
+versionnées : `.claude/agents/{planner,builder,reviewer}.md` (+ miroir minimal `.pi/agents/` pour pi.dev).
+
+**Workflow d'une feature livrée par le pipeline** (goulots humains = 2 gates ; un agent ne merge jamais seul) :
+
+> feature → **planner** → [🧑 valider le plan] → **builder** → [tests verts, gate auto I3] → **reviewer** → [🧑 lire le verdict] → merge
+
+- Trace obligatoire : `plans/<feature>.plan.md` (spec + décision du checkpoint n°1) et
+  `reviews/<feature>.review.md` (verdict + gate I3 reproduite). Commit dédié au merge (checkpoint n°3).
+- **Garde-fou** : le verdict d'un agent ne remplace jamais `npx vitest run` — merge rouge = échec du
+  pipeline. Vérifier aussi le runtime (`npm run dev` + `curl.exe -s 127.0.0.1:3000/...` sous Windows).
+- Exemple de référence : `plans/stats.plan.md` + `reviews/stats.review.md` (feature `/tickets/stats`, Lab 4).
 
 ## Tâches récurrentes
 - Répondre à un ticket → suivre `.claude/memory/reponses-tickets.md`.

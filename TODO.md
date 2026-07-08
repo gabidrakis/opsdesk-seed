@@ -26,6 +26,19 @@ Source : `plans/j4-tools-mcp.md` (validé le 2026-07-08, ajusté au fil des labs
 - [x] Goulot humain validé : 2 gates (accepter le plan · accepter le verdict) ; builder→reviewer = gate auto I3
 - [ ] Versionner les 6 définitions (commit) — en attente feu vert Gabi
 
+## Lab 4 — pipeline planner→builder→reviewer sur une feature réelle (branche `j4-orchestration`)
+
+**Feature : exposer `GET /tickets/stats` qui renvoie `{ open, in_progress, closed }`. Critère : test Vitest passant + route répond 200.**
+
+Contrainte de conception (énoncé) : `stats` se calcule en **réutilisant `listTickets()`** (`src/tickets.ts`, déjà paramétré), **sans nouveau SQL**. Route ajoutée dans `src/server.ts` à côté des routes existantes.
+
+- [x] PLANNER → `plans/stats.plan.md` (plan numéroté ; agent read-only `Plan` + rôle planner injecté)
+- [x] **Checkpoint humain n°1** : plan ACCEPTÉ, décisions A (fonction dédiée) + B (réponse stricte) tracées dans `plans/stats.plan.md`
+- [x] BUILDER → `computeTicketStats` (`src/tickets.ts`) + route (`src/server.ts`) + `test/stats-endpoint.test.ts` (7 cas)
+- [x] **Checkpoint humain n°2** : `npx vitest run` **33/33** (relance perso) + `tsc` exit 0 + live `curl.exe /tickets/stats` = `{open:9,in_progress:2,closed:1}` cohérent SQLite (serveur zombie d'hier tué au passage)
+- [x] REVIEWER → `reviews/stats.review.md` (verdict **ACCEPTER**, gate I3 reproduite ; agent read-only `Explore` + rôle reviewer injecté)
+- [x] **Checkpoint humain n°3** : merge accepté → commit dédié `535cd01`
+- [x] Capitaliser : `plans/stats.plan.md` + `reviews/stats.review.md` versionnés (commit feature), workflow + route `/tickets/stats` ajoutés à `CLAUDE.md`
+
 ## À venir (labs suivants)
-- [ ] Exécuter le pipeline planner→builder→reviewer pour livrer la feature recherche (`GET /tickets/search` + cœur `searchTickets`), checkpoints humains tracés (I2), vitest vert avant reviewer (I3)
 - [ ] Note d'arbitrage (Pièce 5)
