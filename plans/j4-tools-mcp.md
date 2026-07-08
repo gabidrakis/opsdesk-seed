@@ -23,6 +23,23 @@ sans casser les invariants du module.
   (serveur MCP) comme prochaine brique. La feature « recherche » (Pièces 3/4) reste **provisoire** :
   les labs suivants définiront probablement la vraie feature livrée par le pipeline — à réajuster ici.
 
+## Lab 2 — livré (2026-07-08)
+- [x] `mcp/tickets-server.mjs` — serveur MCP « tickets », **3 outils gouvernés** (`list_tickets`,
+  `get_ticket`, `update_ticket_status`), requêtes **paramétrées**, **aucun** outil SQL générique.
+  Logique injectable (`db`) ; démarre sous `node` (boot + `initialize`/`tools/list` vérifiés).
+- [x] `.mcp.json` — déclaration versionnée (chemin relatif portable) → rebranchement au clone.
+- [x] `test/mcp-tickets.test.mjs` — Client MCP + transport in-memory : 3 outils, id=999 géré,
+  écriture réelle en base, entrée hostile (injection) rejetée. `vitest` **26/26 vert**.
+- [x] CLAUDE.md — section « Serveur MCP tickets » + rebranchement une ligne (exigence lab).
+- Écarts au squelette du lab (assumés, meilleure ingénierie) :
+  1. **Emplacement** `mcp/tickets-server.mjs` (lab) et non `src/mcp/server.ts` (plan initial).
+  2. **Runtime `node`** → serveur en `.mjs` sans import `.ts`, connexion better-sqlite3 propre.
+  3. **`.mcp.json` versionné** préféré au `claude mcp add` à chemin **absolu** (non committable,
+     spécifique machine) ; la commande reste documentée dans CLAUDE.md comme voie alternative.
+- **Reste à la main de Gabi** (checkpoint humain, non automatisable par l'agent) : approuver le
+  serveur au 1er lancement, `claude mcp list` → `connected`, exercer les 3 prompts, `sqlite3` de
+  contrôle. Le test vitest en est le miroir reproductible.
+
 ## Lab 1 — livré (2026-07-08)
 - [x] `tools/classifier-ticket.mjs` — `classifierTicket({subject,body})`, corps vide → `{erreur}`
   (pas d'exception), sinon sortie validée par `ClassificationSchema.safeParse` (schéma réutilisé tel quel).

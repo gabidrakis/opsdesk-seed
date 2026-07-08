@@ -93,10 +93,28 @@ sinon sortie **conforme à `src/classification/schema.ts`** (schéma Zod = sourc
 validée par `safeParse`, jamais recopiée). Wrapper CLI : `tools/run-classifier.mjs`, lancé via
 **`npx tsx`** (pas `node` nu : l'outil importe un `.ts`).
 
+## Serveur MCP tickets (`mcp/tickets-server.mjs`) — J4, Lab 2
+**Invariant** : tout accès de l'agent à la base tickets passe par ce serveur MCP. **Aucun SQL
+libre** exécuté par l'agent, **aucun outil générique** (`run_query`/`execute_sql`). Traiter ce
+serveur comme une **dépendance de sécurité**.
+- **3 outils gouvernés**, requêtes **paramétrées** (jamais de concaténation) :
+  `list_tickets { status? }` (lecture) · `get_ticket { id }` (lecture ; absent → `{ erreur: "ticket <id> introuvable" }`) ·
+  `update_ticket_status { id, status }` (**seule écriture** ; aucune suppression).
+- Tourne sous **`node`** nu (n'importe aucun `.ts`, ouvre sa propre connexion better-sqlite3 ;
+  base via env `OPSDESK_DB`, défaut `data/opsdesk.db`).
+- **Rebranchement en une ligne** — deux voies :
+  - **Versionné (recommandé)** : `.mcp.json` du projet déclare le serveur (chemin relatif,
+    portable) → dispo au clone, approuver au 1er lancement de Claude Code.
+  - **CLI équivalente** : `claude mcp add tickets -- node "$(pwd)/mcp/tickets-server.mjs"`
+    puis `claude mcp list` → `tickets ✓ connected`. (Ne pas cumuler avec `.mcp.json` : doublon.)
+- Test : `test/mcp-tickets.test.mjs` (Client MCP + transport in-memory : 3 outils exposés,
+  id introuvable géré, écriture réelle, entrée hostile rejetée).
+
 ## Tâches récurrentes
 - Répondre à un ticket → suivre `.claude/memory/reponses-tickets.md`.
 - Traiter des tickets en lot de façon idempotente → suivre `.claude/memory/idempotence.md`.
 - Classer un ticket → slash-command `/classer-ticket` (délègue à `tools/run-classifier.mjs`).
+- Lire/écrire un ticket → **via le serveur MCP `tickets`** uniquement (jamais de SQL libre).
 
 ## Carte du contexte (où vit quoi)
 - **Session (volatile)** : la tâche en cours — le fil de discussion, ce qu'on se dit maintenant.

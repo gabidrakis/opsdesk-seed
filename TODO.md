@@ -12,9 +12,14 @@ Source : `plans/j4-tools-mcp.md` (validé le 2026-07-08, ajusté au fil des labs
 - [x] `tools/classifier-ticket.test.mjs` (3 cas) — `vitest` vert (20/20 suite complète)
 - [x] Note « contrat d'un outil » dans `CLAUDE.md`
 
+## Lab 2 — serveur MCP tickets (seul accès base, invariant I1)
+- [x] `mcp/tickets-server.mjs` — 3 outils gouvernés, requêtes paramétrées, aucun SQL générique
+- [x] `.mcp.json` versionné (rebranchement au clone) + doc `claude mcp add` dans CLAUDE.md
+- [x] `test/mcp-tickets.test.mjs` — Client MCP in-memory (3 outils, id=999 géré, écriture réelle, injection rejetée)
+- [x] Boot sous `node` vérifié (initialize + tools/list) ; suite **26/26 vert**
+- [ ] **Checkpoint Gabi (manuel, Claude Code)** : `claude mcp list` connected · 3 prompts · `sqlite3` id=1001
+
 ## À venir (en attente des labs suivants)
-- [ ] Lab 2 : `classifier_ticket` devient un vrai outil MCP appelé par l'agent
-- [ ] Serveur MCP = seul accès à la base tickets (invariant I1)
 - [ ] Pipeline planner→builder→reviewer (checkpoints humains tracés, I2 ; vitest vert avant reviewer, I3)
 - [ ] Feature livrée par le pipeline
 - [ ] Note d'arbitrage
