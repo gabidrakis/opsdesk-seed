@@ -17,6 +17,21 @@ export function getTicket(id: number, database: DB = defaultDb): Ticket | undefi
     .get(id) as Ticket | undefined;
 }
 
+// Compteurs de tickets par statut, restreints aux 3 statuts attendus.
+export type TicketStats = { open: number; in_progress: number; closed: number };
+
+// Fonction PURE : compte les tickets par statut. Aucun acces base, aucun SQL.
+// Les statuts hors des 3 cles attendues sont ignores.
+export function computeTicketStats(tickets: Ticket[]): TicketStats {
+  const stats: TicketStats = { open: 0, in_progress: 0, closed: 0 };
+  for (const t of tickets) {
+    if (t.status === "open" || t.status === "in_progress" || t.status === "closed") {
+      stats[t.status] += 1;
+    }
+  }
+  return stats;
+}
+
 // Met a jour le statut d'un ticket. Retourne true si une ligne a ete modifiee.
 export function updateTicketStatus(
   id: number,

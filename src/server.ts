@@ -4,7 +4,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { PORT } from "./config.js";
 import { db as defaultDb } from "./db.js";
 import { buildReplySuggestion } from "./reply.js";
-import { getTicket, listTickets, updateTicketStatus } from "./tickets.js";
+import { computeTicketStats, getTicket, listTickets, updateTicketStatus } from "./tickets.js";
 
 type DB = BetterSqlite3.Database;
 
@@ -63,6 +63,11 @@ export function buildApp(database: DB = defaultDb, logger = true): FastifyInstan
       return { id: ticket.id, suggestion: buildReplySuggestion(ticket) };
     },
   );
+
+  // Compteurs de tickets par statut (open / in_progress / closed).
+  app.get("/tickets/stats", async () => {
+    return computeTicketStats(listTickets(database));
+  });
 
   return app;
 }
