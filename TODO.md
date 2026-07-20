@@ -8,6 +8,9 @@ Source : `plans/revue-agentique.md` (validé le 2026-07-20 ; Décisions A = giti
 - [x] Étape 4 : `.github/workflows/revue-agentique.yml` — check tout-`.md`, timeout 10, Job Summary
 - [x] Étape 5 : tests Vitest `.mjs` — `test/revue-agent.test.mjs` + `test/publier-verdict.test.mjs` (fonctions pures)
 - [x] Étape 6 : capitalisation `CLAUDE.md` (section « Revue agentique en CI ») + journal
+- [x] Étape 7 : ADR `docs/decisions/adr-001-mise-en-prod.md` (décision PROPOSÉE, à trancher par Gabi)
+- [x] Étape 8 : index portfolio `docs/portfolio/README.md` (5 livrables, liens valides)
+- [x] Étape 9 : script de démo `docs/portfolio/demo.md` (5 min, rejouable)
 
 ## Reste (actions humaines non déléguées — H1–H4)
 - [ ] H1 : créer le secret `ANTHROPIC_API_KEY` (Actions secret)

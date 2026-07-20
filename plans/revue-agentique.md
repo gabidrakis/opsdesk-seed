@@ -56,6 +56,11 @@ PR idempotent** — l'agent conseille, la *branch protection* bloque, l'humain m
 
 6. [ ] **Capitalisation** — `CLAUDE.md` : section « Revue agentique en CI » (workflow, marqueur d'idempotence, **procédure de re-run manuel tracé** `Actions → Re-run failed jobs`, doctrine « check vert ≠ validation humaine »). `TODO.md` + `journal/2026-07-09.md`.
 
+### Livrables portfolio / décision (ajoutés le 2026-07-20 d'après la fiche réflexe M5)
+7. [ ] **ADR** — `docs/decisions/adr-001-mise-en-prod.md` (pipeline éphémère vs agent persistant ; format contexte/options/critères/décision datée/conséquences). **Décision laissée à l'arbitrage de Gabi** (statut « Proposé »).
+8. [ ] **Index portfolio** — `docs/portfolio/README.md` (5 livrables, liens valides, critères dominants).
+9. [ ] **Script de démo** — `docs/portfolio/demo.md` (5 min, rejouable sans aide orale ; couvre H4).
+
 ## Actions humaines — NON déléguées (tes règles strictes : irréversible / secrets / non vérifiable)
 - **H1 — Secret** : créer `ANTHROPIC_API_KEY` dans *Settings → Secrets and variables → Actions*. **Toi seul** (touche à un secret). Je ne le manipule pas.
 - **H2 — Branch protection** : *Settings → Branches* sur `main` → *Require a pull request before merging* + *Require approvals (1)*. Verrou central, non optionnel.
