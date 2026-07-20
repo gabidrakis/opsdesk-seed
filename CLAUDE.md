@@ -7,7 +7,7 @@ SQLite locale, plus un jeu de données d'exemple (`npm run seed`).
 ## Stack
 - TypeScript 5.5 en ESM (`"type": "module"`) — cible ES2022, `moduleResolution: "Bundler"`
   (`tsconfig.json`). Conséquence : les imports internes portent l'extension `.js`
-  même en `.ts` (ex. `import { PORT } from "./config.js"`, `src/server.ts:2`).
+  même en `.ts` (ex. `import { PORT } from "./config.js"`, `src/server.ts:4`).
 - Node **>=20 <24** (`package.json` → `engines`). La borne haute n'est pas cosmétique :
   le driver natif `better-sqlite3` n'a pas de binaire précompilé pour Node 24 → rester en 20–23.
 - Fastify 4 (API HTTP) · better-sqlite3 11 (SQLite, driver natif).
@@ -48,7 +48,7 @@ SQLite locale, plus un jeu de données d'exemple (`npm run seed`).
 ## Conventions (déduites du code)
 - Imports ESM avec extension `.js` (voir Stack).
 - Routes Fastify typées par génériques : `app.get<{ Params: { id: string } }>(...)`
-  (`src/server.ts:18,28`).
+  (`src/server.ts:27,55` ; `POST` en `src/server.ts:37`).
 - Erreurs HTTP : `reply.code(4xx).send({ error: "..." })`.
 - Fichiers `src/` : un mot, minuscule (`config.ts`, `db.ts`, `server.ts`, `tickets.ts`, `seed.ts`).
 - Fonctions : camelCase à préfixe verbal (`listTickets`, `getTicket`, `updateTicketStatus`,
