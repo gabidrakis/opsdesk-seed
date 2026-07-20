@@ -1,9 +1,7 @@
 # ADR-001 · Mise en production de l'agent de revue : pipeline éphémère vs agent persistant
 Daté : 2026-07-20 · Module 5 (OpsDesk)
 
-- **Statut : PROPOSÉ — en attente d'arbitrage de Gabi.** (La décision ci-dessous est une
-  recommandation argumentée ; elle n'est actée que lorsque Gabi la valide et passe le statut
-  à « Accepté ».)
+- **Statut : ACCEPTÉ** (tranché par Gabi le 2026-07-20 → **Option A, pipeline éphémère**).
 
 ## Contexte
 OpsDesk doit brancher un **agent de revue de PR** en production (CI). Deux architectures d'agent
@@ -34,8 +32,8 @@ spawn massif) : voir [note d'arbitrage J4](../../portfolio/J4-arbitrage-orchestr
 5. **Sûreté** — surface d'attaque minimale ; l'agent ne merge jamais.
 6. **Besoin réel** — la revue de PR est-elle **événementielle** ou **conversationnelle** ?
 
-## Décision proposée (à trancher)
-> **Recommandation : Option A — pipeline éphémère.**
+## Décision (tranchée le 2026-07-20 par Gabi)
+> **Option A — pipeline éphémère.** (ACCEPTÉE.)
 
 Justification par critère :
 - La revue de PR est **événementielle** par nature (un push → une revue) : aucun besoin
@@ -49,8 +47,8 @@ Justification par critère :
 - L'agent persistant (B) resterait pertinent **uniquement** si un besoin conversationnel continu
   émergeait (triage interactif, dialogue multi-tours) — hors périmètre OpsDesk aujourd'hui.
 
-**Zone à trancher par Gabi** : accepter A, ou demander B (ou un hybride). Tant que le statut est
-« Proposé », l'ADR n'engage pas.
+**Arbitrage** : Gabi a accepté A le 2026-07-20. B resterait rouvrable par un ADR ultérieur si un
+besoin conversationnel continu émergeait.
 
 ## Conséquences
 - **Si A accepté** (recommandé) : on garde l'implémentation livrée
