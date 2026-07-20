@@ -129,6 +129,33 @@ versionnées : `.claude/agents/{planner,builder,reviewer}.md` (+ miroir minimal 
   pipeline. Vérifier aussi le runtime (`npm run dev` + `curl.exe -s 127.0.0.1:3000/...` sous Windows).
 - Exemple de référence : `plans/stats.plan.md` + `reviews/stats.review.md` (feature `/tickets/stats`, Lab 4).
 
+## Revue agentique en CI (`.github/workflows/revue-agentique.yml`) — J5, Module 5
+Sur `pull_request`, un agent (`claude -p`) lit **le diff** (contenu **non fiable**, fourni sur stdin) +
+`CLAUDE.md`, rend un **verdict JSON validé** et le publie en **un seul commentaire de PR idempotent**.
+Workflow **séparé** de `ci.yml` (non touchée) ; les deux coexistent sur une PR.
+
+**4 verrous non négociables :**
+1. **L'agent ne merge jamais** — verrou réel = **branch protection** `main` (Require approvals 1),
+   pas le job. `permissions: contents: read` (+ `pull-requests: write` pour le seul commentaire).
+2. **Sortie structurée validée** — `validerVerdict()` (whitelist `verdict`, `findings` tableau,
+   `summary` string) ; JSON non conforme → `exit 1`, **rien n'est publié**.
+3. **Secret hors du code** — `ANTHROPIC_API_KEY` en **Actions secret**, jamais dans le YAML
+   (le hook M2 `guard-commit.sh` reste actif, il ne bloque que le littéral `opsdesk_live_…`).
+4. **Idempotence** — marqueur caché `<!-- opsdesk-revue-agent -->` + upsert (`gh api --paginate
+   --slurp` → find → PATCH/POST) : **2 pushes → 1 commentaire mis à jour**, jamais de doublon.
+
+- **Doctrine** : *check vert ≠ validation humaine*. Le job informe ; c'est l'humain qui merge.
+- **Re-run manuel tracé** (jamais de boucle auto) : GitHub → onglet *Actions* → run → *Re-run jobs*.
+- **Conception maison** : scripts = fonctions **pures** exportées (`nettoyerSortie`, `validerVerdict`,
+  `rendreMarkdown`) + garde CLI `import.meta.url` (patron `src/server.ts:77`) → testables sans lancer
+  l'agent. `claude` / `gh api` = effets de bord externes, couverts par la démo, non unit-testés.
+- **Durcissement** : court-circuit si diff tout-`.md` · `timeout-minutes: 10` · Job Summary
+  (PR, commit, verdict, nb findings, durée, horodatage UTC). Verdicts `reviews/revue-*.json`
+  **gitignorés** (artefacts runtime ; l'observabilité vit dans le Job Summary + le commentaire).
+- Livrables : `.github/agent/revue-pr.md` (prompt, grille 6 composants + 1 few-shot) ·
+  `scripts/revue-agent.mjs` · `scripts/publier-verdict.mjs` · tests `test/revue-agent.test.mjs`
+  + `test/publier-verdict.test.mjs`. Plan : `plans/revue-agentique.md`.
+
 ## Tâches récurrentes
 - Répondre à un ticket → suivre `.claude/memory/reponses-tickets.md`.
 - Traiter des tickets en lot de façon idempotente → suivre `.claude/memory/idempotence.md`.

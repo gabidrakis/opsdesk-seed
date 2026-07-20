@@ -1,0 +1,91 @@
+# Revue agentique de PR (J5, Module 5). SÉPARÉE de ci.yml (non touchée) : les deux
+# coexistent sur une PR. L'agent conseille ; la branch protection bloque ; l'humain merge.
+name: Revue agentique
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Verrou n°1 : l'agent ne peut PAS pousser/merger. Écriture limitée aux commentaires de PR.
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  revue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Horodatage début
+        id: start
+        run: echo "epoch=$(date -u +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Calculer le diff (contre la base de la PR)
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          git diff "origin/${{ github.base_ref }}...HEAD" > diff.patch
+          echo "Fichiers modifiés :"
+          git diff --name-only "origin/${{ github.base_ref }}...HEAD"
+
+      - name: Court-circuit si diff tout-.md
+        id: check
+        run: |
+          non_md=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -vE '\.md$' || true)
+          if [ -z "$non_md" ]; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            echo "Diff tout-.md → revue agentique non nécessaire."
+          else
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Installe le binaire `claude`. Alternative documentée : curl install.sh officiel.
+      - name: Installer Claude Code
+        if: steps.check.outputs.needed == 'true'
+        run: npm install -g @anthropic-ai/claude-code
+
+      # Verrou n°3 : la clé vit en Actions secret, jamais dans ce YAML.
+      - name: Revue agentique (verdict JSON validé)
+        if: steps.check.outputs.needed == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/revue-agent.mjs diff.patch
+
+      # Verrou n°4 : upsert idempotent (2 pushes → 1 commentaire mis à jour).
+      - name: Publier le verdict (commentaire idempotent)
+        if: steps.check.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/publier-verdict.mjs
+
+      - name: Job Summary
+        if: always()
+        run: |
+          sha=$(git rev-parse --short HEAD)
+          fichier="reviews/revue-$sha.json"
+          verdict="(non produit)"; nb="-"
+          if [ -f "$fichier" ]; then
+            verdict=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$fichier','utf8')).verdict)")
+            nb=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$fichier','utf8')).findings.length)")
+          fi
+          duree=$(( $(date -u +%s) - ${{ steps.start.outputs.epoch }} ))
+          {
+            echo "## Revue agentique — récapitulatif"
+            echo ""
+            echo "| Champ | Valeur |"
+            echo "|---|---|"
+            echo "| PR | #${{ github.event.pull_request.number }} |"
+            echo "| Commit | \`$sha\` |"
+            echo "| Revue nécessaire | ${{ steps.check.outputs.needed }} |"
+            echo "| Verdict | \`$verdict\` |"
+            echo "| Findings | $nb |"
+            echo "| Durée | ${duree}s |"
+            echo "| Horodatage (UTC) | $(date -u +'%Y-%m-%dT%H:%M:%SZ') |"
+          } >> "$GITHUB_STEP_SUMMARY"

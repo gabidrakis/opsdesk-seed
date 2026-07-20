@@ -10,3 +10,7 @@ data/
 
 # Journaux runtime de classify-batch (horodatés, non reproductibles)
 journal/classify-batch-*.md
+
+# Verdicts runtime de la revue agentique (horodatés par SHA, non reproductibles ;
+# l'observabilité vit dans le Job Summary + le commentaire de PR — Décision A, J5)
+reviews/revue-*.json
