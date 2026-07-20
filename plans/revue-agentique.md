@@ -62,11 +62,11 @@ PR idempotent** — l'agent conseille, la *branch protection* bloque, l'humain m
 - **H3 — Connexion plateforme d'éval** : installer la GitHub App de la formation / autoriser le webhook sur le fork (lecture des PR + post du rapport).
 - **H4 — Démo rejouable (portfolio P3)** : ouvrir une PR de test, vérifier **2 pushes → 1 commentaire mis à jour**, Job Summary rempli, re-run manuel sans doublon. Vérification finale par toi (résultat sur PR réelle, non reproductible en local).
 
-## Décisions à trancher par l'humain
-- **Décision A — Sort des `reviews/revue-<sha>.json`.**
-  *Recommandé* : les **gitignorer** (`reviews/revue-*.json`), comme `journal/classify-batch-*.md` — artefacts runtime horodatés, l'observabilité vit dans le Job Summary + le commentaire de PR. *Alternative* : les committer (trace versionnée, mais bruit par PR).
-- **Décision B — Few-shot dans `revue-pr.md`.**
-  *Recommandé* : ajouter **1 paire** entrée→sortie (diff court → JSON attendu) pour verrouiller la discipline de format. *Alternative* : garder le zéro-shot du module (plus court, format déjà contraint par validation).
+## Décisions tranchées par l'humain (2026-07-20)
+- **Décision A — Sort des `reviews/revue-<sha>.json` → TRANCHÉE : gitignorer.**
+  `reviews/revue-*.json` ajoutés au `.gitignore` (comme `journal/classify-batch-*.md`) — artefacts runtime horodatés ; l'observabilité vit dans le Job Summary + le commentaire de PR.
+- **Décision B — Few-shot dans `revue-pr.md` → TRANCHÉE : 1 paire.**
+  Le prompt inclut **1 paire** entrée→sortie (diff court → JSON attendu) pour verrouiller la discipline de format (complète la grille 6-composants).
 
 ## Risques identifiés
 - **`claude` absent du runner** — non préinstallé sur GitHub Actions → step d'install **indispensable** (sinon échec immédiat). Repli documenté : Agent SDK `query()`.
@@ -79,3 +79,5 @@ PR idempotent** — l'agent conseille, la *branch protection* bloque, l'humain m
 
 ## Relecture
 - **2026-07-09 · Checkpoint humain n°1 — en attente de validation de Gabi.** Aucun code applicatif écrit tant que ce plan n'est pas accepté et les Décisions A/B tranchées.
+- **2026-07-20 · Décisions A/B tranchées** (A = gitignorer `reviews/revue-*.json` ; B = 1 paire few-shot).
+- **2026-07-20 · Checkpoint humain n°1 — PLAN VALIDÉ par Gabi (feu vert explicite).** Implémentation autorisée ; `TODO.md` généré, étapes tracées au journal.
