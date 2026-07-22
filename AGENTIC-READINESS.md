@@ -24,13 +24,20 @@
 | Champ | Valeur |
 |-------|--------|
 | Dépôt diagnostiqué | `opsdesk/` (copie de travail, **jamais** le seed) |
-| Branche / état | `[ex. main (seed) · etat/j1-fin]` |
-| Auteur du diagnostic | `[nom]` |
-| **Date** | `[AAAA-MM-JJ]` |
-| **Score total** | **`[__]` / 12** |
+| Branche / état | `etat/j1-fin` (mémoire projet créée + relue) — score de fin J1 |
+| Auteur du diagnostic | Gabi (gabidrakis) |
+| **Date** | 2026-07-03 (score de fin J1) · 2026-07-02 (score d'entrée) |
+| **Score total** | **5 / 12** — score de fin J1, daté 2026-07-03 · **3 / 12** score d'entrée (seed), daté 2026-07-02 |
 
 > Reporter ici **chaque passage** (score d'entrée à l'arrivée sur le seed, puis score après
 > J1.5, puis aux journées suivantes), **daté**, pour matérialiser la progression.
+
+### Passages (progression datée)
+
+| Passage | Date | Branche / état | Score | Delta |
+|---------|------|----------------|-------|-------|
+| Entrée (Lab J1.3, seed) | 2026-07-02 | `main` (seed) | **3 / 12** | — |
+| Fin J1 (mémoire créée + relue, Lab 6) | 2026-07-03 | `etat/j1-fin` | **5 / 12** | dim. 1 *Mémoire projet* **0 → 2** (+2) |
 
 ---
 
@@ -73,13 +80,13 @@
 
 | # | Dimension | Note (0/1/2) | Justification (1 ligne) + preuve (fichier / commande) |
 |---|-----------|--------------|--------------------------------------------------------|
-| 1 | Mémoire projet | `[_]` | `[…]` |
-| 2 | Cibles vérifiables (tests / CI) | `[_]` | `[…]` |
-| 3 | Conventions explicites | `[_]` | `[…]` |
-| 4 | Observabilité | `[_]` | `[…]` |
-| 5 | Gouvernance (relecture / secrets) | `[_]` | `[…]` |
-| 6 | Capitalisation | `[_]` | `[…]` |
-| | **TOTAL** | **`[__]` / 12** | (reporter dans l'en-tête, daté) |
+| 1 | Mémoire projet | 2 | *(entrée : 0)* `CLAUDE.md` **écrit et relu/corrigé par l'humain** (brouillon commit `6194e89` sur `etat/j1-fin`, puis version corrigée : seed destructif, modèle de données + énums, env `OPSDESK_DB`, critères de réussite, pièges Windows). À jour vs `src/`. Re-test A/B (`notes-j1.md`, Lab 6) : **3 devinettes/erreurs disparues**. *(Commit 2 de correction en attente ; arbitrage humain.)* |
+| 2 | Cibles vérifiables (tests / CI) | 1 | Tests présents (`test/tickets.test.ts` ; `npm test` = `vitest run`) + CI (`.github/workflows/ci.yml` : npm ci + npm test), mais **CI jamais exécutée verte sur le fork** (0 run). → passe à **2** dès qu'une CI verte est constatée. |
+| 3 | Conventions explicites | 1 | `README.md` documente stack/routes/schéma, mais les conventions (imports ESM `.js`, gestion d'erreurs Fastify `reply.code().send()`) restent **implicites dans le code** ; pas de linter/formatter. |
+| 4 | Observabilité | 1 | `Fastify({ logger: true })` (`src/server.ts`) → traces de requêtes, mais **aucun état-en-fichiers** (pas de `TODO.md`/plans) ni trace d'agent. → **0** si l'on juge que le log applicatif ne compte pas comme observabilité agentique. |
+| 5 | Gouvernance (relecture / secrets) | 0 | Secret en clair `OPSDESK_API_KEY = "opsdesk_live_…"` dans `src/config.ts` ; aucun garde-fou ni relecture tracée. *(Documenté ici, **non corrigé** — traité en J2 via hook de gouvernance.)* |
+| 6 | Capitalisation | 0 | Aucun prompt/slash-command réutilisable pour le travail applicatif ; on repart de zéro à chaque session. |
+| | **TOTAL** | 5 / 12 | *(entrée : 3)* Fin J1 : dim. 1 *Mémoire projet* **0 → 2** (+2). Dims 2–6 inchangées. (proposé — arbitrage humain ; reporté dans l'en-tête, daté 2026-07-03) |
 
 ---
 

@@ -1,0 +1,34 @@
+# Chain pi.dev — pipeline planner -> builder -> reviewer pour OpsDesk.
+# MEME pattern "Chain" que le pipeline Claude Code du Lab 4, exprime dans un autre outil.
+# Chaque etape appelle un agent defini au Lab 3 (.pi/agents/<name>.md).
+#
+# Deux variables propagent l'etat entre les etapes :
+#   $ORIGINAL = la demande initiale (immuable, disponible a chaque etape)
+#   $INPUT    = la sortie de l'etape precedente (change a chaque maillon)
+
+name: opsdesk-feature-chain
+description: Livre une feature OpsDesk via la sequence planner -> builder -> reviewer.
+
+steps:
+  # Etape 1 — PLANNER : recoit la demande brute, produit une spec d'implementation.
+  - name: plan
+    agent: .pi/agents/planner.md
+    input: $ORIGINAL
+
+  # Etape 2 — BUILDER : recoit la spec (= sortie du planner) + le rappel de la demande.
+  - name: build
+    agent: .pi/agents/builder.md
+    input: |
+      Demande initiale : $ORIGINAL
+
+      Plan valide a implementer fidelement :
+      $INPUT
+
+  # Etape 3 — REVIEWER : recoit la diff/implementation (= sortie du builder) + la demande.
+  - name: review
+    agent: .pi/agents/reviewer.md
+    input: |
+      Demande initiale : $ORIGINAL
+
+      Implementation a relire (sortie du builder) :
+      $INPUT
