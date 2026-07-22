@@ -64,6 +64,20 @@ export function buildApp(database: DB = defaultDb, logger = true): FastifyInstan
     },
   );
 
+  // Ferme un ticket (statut -> "closed"). Defaut volontaire J5 : livre SANS test,
+  // pour que la revue agentique le signale sur la PR de demonstration.
+  app.post<{ Params: { id: string } }>(
+    "/tickets/:id/close",
+    async (request, reply) => {
+      const id = Number(request.params.id);
+      const updated = updateTicketStatus(id, "closed", database);
+      if (!updated) {
+        return reply.code(404).send({ error: "ticket not found" });
+      }
+      return getTicket(id, database);
+    },
+  );
+
   // Compteurs de tickets par statut (open / in_progress / closed).
   app.get("/tickets/stats", async () => {
     return computeTicketStats(listTickets(database));
