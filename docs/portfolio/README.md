@@ -46,18 +46,61 @@ Cochée = vérifiée dans le dépôt. La preuve est le fichier/mécanisme cité.
   Preuve : `scripts/revue-agent.mjs:33-39` (diff sur stdin).
 
 ## Grille d'auto-évaluation P3 (à froid)
-Une note /5 par critère, **justifiée par une preuve**. ⚠️ Les notes sont à renseigner par Gabi
-(auto-évaluation honnête, avant le verdict plateforme) ; la colonne preuve est pré-remplie.
+Une note /5 par critère. ⚠️ **Les chiffres sont à poser par Gabi** (auto-évaluation honnête, avant le
+verdict plateforme). Le factuel, les preuves et la limite sont pré-remplis ; chaque note se lit
+« ce que j'ai fait → preuve vérifiable → limite honnête qui m'empêche de mettre plus ».
 
-| Critère | Note /5 | Preuve (à l'appui de la note) |
-|---|:---:|---|
-| **Autonomie** | _(à remplir)_ | Pipeline planner→builder→reviewer (J4) · revue agentique en CI qui tourne seule sur `pull_request` (J5). |
-| **Observabilité** | _(à remplir)_ | Job Summary + commentaire idempotent (J5) · `plans/`, `TODO.md`, `journal/` (état sur disque). |
-| **Fiabilité** | _(à remplir)_ | Idempotence + reprise après crash prouvées par test (J3) · 46/46 tests verts · upsert (J5). |
-| **Gouvernance** | _(à remplir)_ | Branch protection + agent ne merge jamais · secret hors code + hook · sortie validée (J5) · ADR-001. |
-| **Enseigner à ses agents** | _(à remplir)_ | `CLAUDE.md` + `.claude/memory/*` · bibliothèque de prompts (J2) · gabarits réutilisables (workflow, ADR). |
+| Critère | Note /5 |
+|---|:---:|
+| Autonomie | `3 / 5` |
+| Observabilité | `4 / 5` |
+| Fiabilité | `5 / 5` |
+| Gouvernance | `5 / 5` |
+| Enseigner à ses agents | `4 / 5` |
+
+### Autonomie — `3 / 5`
+La revue de PR se déclenche **seule** sur `pull_request` et rend un verdict sans intervention
+(prouvé sur la PR de démo : job vert, `request_changes` détecté sur la route non testée). Le pipeline
+`planner→builder→reviewer` (J4) enchaîne conception → code → jugement.
+_Preuve :_ `.github/workflows/revue-agentique.yml`, PR de démo, `.claude/agents/`.
+_Limite :_ autonomie **bornée par choix** — re-run manuel, aucun auto-merge, gates humains ; c'est de
+l'autonomie encadrée, pas totale.
+
+### Observabilité — `4 / 5`
+Chaque exécution produit un **Job Summary** (PR, commit, verdict, nb findings, durée, horodatage UTC)
+et **un** commentaire de PR ; l'état de chantier vit sur disque (`plans/*.md`, `TODO.md`, `journal/`) ;
+mesure avant/après tracée en J3.
+_Preuve :_ step *Job Summary* de `.github/workflows/revue-agentique.yml`, commentaire de la PR de démo,
+`mesure/avant-apres.md`.
+_Limite :_ observabilité **par run** — pas de métriques agrégées ni de tableau de tendance dans le temps.
+
+### Fiabilité — `5 / 5`
+L'idempotence et la reprise après crash ne sont pas affirmées mais **prouvées par test** :
+`test/classify-idempotent.test.ts` rejoue le batch (2ᵉ passage = 0 reclassé) et simule un crash via
+`OPSDESK_FAIL_AT` puis vérifie que la reprise ne refait que le reste. Suite complète **46/46 verte** ;
+verdict de revue validé par schéma (invalide → `exit 1`, rien publié).
+_Preuve :_ `test/classify-idempotent.test.ts`, `npx vitest run`, `scripts/publier-verdict.mjs`
+(`validerVerdict`).
+_Limite :_ tout est vérifié en base `:memory:` — pas de test de charge ni de reprise sur la base réelle.
+
+### Gouvernance — `5 / 5`
+Les gates irréversibles restent **humains** : branch protection `main` (1 approbation, agent ne merge
+jamais). Secret hors du code (Actions secret + hook `guard-commit.sh`). Sorties structurées **validées**
+(schéma Zod J2/J4, verdict JSON J5 ; non conforme → échec). Décision d'archi **tracée** (ADR-001).
+_Preuve :_ protection posée (`gh api …/branches/main/protection`), `scripts/guard-commit.sh`,
+`scripts/publier-verdict.mjs`, `docs/decisions/adr-001-mise-en-prod.md`.
+_Limite :_ angle mort connu et documenté — `OPSDESK_API_KEY` reste codée en dur dans `src/config.ts`
+(signalé dans `CLAUDE.md`, non corrigé).
+
+### Enseigner à ses agents — `4 / 5`
+Des règles réutilisables sont transmises aux agents : `CLAUDE.md` riche + mémoires `.claude/memory/*.md`,
+bibliothèque de prompts figés en slash-commands (`.claude/commands/`), gabarits réutilisables (workflow
+de revue, ADR, pipeline planner/builder/reviewer).
+_Preuve :_ `CLAUDE.md`, `.claude/commands/`, `.claude/agents/`, `.claude/memory/`.
+_Limite :_ aucune vérification automatique que les agents **respectent** effectivement ces règles — la
+conformité repose sur la relecture humaine.
 
 ## Question rituelle (J5)
-> _(Intitulé de la question rituelle du jalon J5 — à recopier depuis le tableau de bord.)_
+>  Qu'ai-je délégué / enseigné à mes agents aujourd'hui, et comment l'ai-je vérifié ? 
 
-_(Réponse à rédiger par Gabi — section personnelle, non déléguée à l'agent.)_
+J'ai délégué à mon agent la vérification de mon travail + la mécanique CI/portfolio, tout en lui enseignant que je garde les gates irréversibles et le jugement personnel. Je l'ai vérifié par la branch protection posée de ma main, le  secret confirmé, et la PR de démo verte où l'agent a détecté seul la route non testée.
