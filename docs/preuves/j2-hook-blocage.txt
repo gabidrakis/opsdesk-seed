@@ -1,0 +1,30 @@
+Preuve Lab 4 (J2) — Hook bloquant : secret et convention
+Genere le : 2026-07-06T15:22:27+0200
+Depot     : opsdesk    Branche : feat/j2-prompts-structures
+HEAD avant tentative : e18750b1a677c1cadf86c32bf6d715cb280537d9
+
+Mecanisme : hook PreToolUse (filtre Bash) -> scripts/guard-commit.sh
+Le guard lit l'evenement hook (JSON/stdin), n'agit que sur les commandes
+de type commit, scanne 'git diff --cached' et refuse (exit 2) si un secret
+(motif opsdesk_live_...) est present dans le contenu stage.
+
+Contenu stage au moment du test :
+  - tmp-secret.ts
+
+--- Sortie console du blocage (stderr du guard, reproductible) ---
+===============================================================
+  COMMIT BLOQUE par scripts/guard-commit.sh
+  Horodatage : 2026-07-06T15:22:28+0200
+  Raison     : secret detecte dans le contenu stage
+               (motif : opsdesk_live_[A-Za-z0-9]+)
+  Action     : retire le secret du fichier, re-stage, recommite.
+===============================================================
+
+Code de sortie du guard : 2   (2 = refuse)
+HEAD apres tentative    : e18750b1a677c1cadf86c32bf6d715cb280537d9
+=> HEAD inchange : aucun commit cree. Blocage effectif et reproductible.
+
+Note : lors de ce lab, le hook etait aussi ACTIF dans la session Claude Code ;
+une commande Bash contenant 'git''commit' a ete refusee en direct avec le meme
+message (PreToolUse:Bash hook error). Le present fichier rejoue ce blocage de
+maniere deterministe via invocation directe du guard sur le meme contenu stage.
